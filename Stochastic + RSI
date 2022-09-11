@@ -1,0 +1,85 @@
+//@version=4
+study(title="Stochastic & RSI", shorttitle="Stochastic & RSI", format=format.price, precision=2)
+
+// Stoch rsi 
+smoothK = input(3, "Smooth K", minval=1)
+smoothD = input(3, "Smooth D", minval=1)
+lengthRSI = input(14, "RSI Length", minval=1)
+lengthRSI2 = input(50, "RSI2 Length", minval=1)
+
+lengthEMA = input(14, "EMA Length", minval=1)
+
+lengthStoch = input(14, "Stochastic Length", minval=1)
+src = input(close, title="RSI Source")
+rsi_stoch = rsi(src, lengthStoch)
+rsi1 = rsi(src, lengthRSI)
+rsi2 = rsi(src, lengthRSI2)
+
+k = sma(stoch(rsi_stoch, rsi_stoch, rsi_stoch, lengthStoch), smoothK)
+d = sma(k, smoothD)
+plot(k, "K", color=#2962FF)
+plot(d, "D", color=#FF6D00)
+
+max_level =  input(title="Upper level", type=input.integer, defval=70, minval=0, maxval=100)
+min_level = input(title="Lower level", type=input.integer, defval=30, minval=0, maxval=100)
+
+h0 = hline(max_level, "Upper Band", color=#787B86, editable=false)
+h1 = hline(min_level, "Lower Band", color=#787B86, editable=false)
+h2 = hline(50, "Middle Band", color=#787B86)
+fill(h0, h1, color=color.rgb(33, 150, 243, 90), title="Background")
+
+// rsi
+show_rsi_color  = input(title="Show RSI color", type=input.bool, defval=true)
+show_rsi2_color = input(title="Show RSI2 color", type=input.bool, defval=false)
+up1 = rma(max(change(src), 0), lengthRSI)
+down1 = rma(-min(change(src), 0), lengthRSI)
+_rsi1 = down1 == 0 ? 100 : up1 == 0 ? 0 : 100 - (100 / (1 + up1 / down1))
+
+up2 = rma(max(change(src), 0), lengthRSI2)
+down2 = rma(-min(change(src), 0), lengthRSI2)
+_rsi2 = down2 == 0 ? 100 : up2 == 0 ? 0 : 100 - (100 / (1 + up2 / down2))
+
+ema = ema(_rsi1, lengthEMA)
+plot(ema, "RSI-based EMA", color=color.yellow)
+
+col_rsi = #7E57C2
+
+if _rsi1 >= 50 and show_rsi_color
+    col_rsi := color.lime
+    
+if _rsi1 < 50 and show_rsi_color
+    col_rsi := color.red
+
+col_rsi2 = color.yellow
+
+if _rsi2 >= 50 and show_rsi2_color
+    col_rsi2 := color.lime
+    
+if _rsi2 < 50 and show_rsi2_color
+    col_rsi2 := color.red
+
+plot(_rsi1, "RSI",   color=col_rsi,  linewidth=2)
+plot(_rsi2, "RSI 2", color=col_rsi2, linewidth=3, display=display.none)
+
+enter_oversold = k < min_level and k[1] >= min_level
+enter_overbought = d > max_level and d[1] <= max_level
+stoch_cross = cross(d, k)
+
+// ————— Truncate decimals
+f_truncate(number, decimals) =>
+    factor = pow(10, decimals)
+    int(number * factor) / factor
+
+// ————— Get ATR and ADX
+atr1 = atr(14)
+[_,_,adx1] = dmi(17, 4)
+
+var tab1 = table.new(position = position.bottom_left, columns = 1, rows = 2, bgcolor = color.gray, border_width = 1)
+if barstate.islast
+    table.cell(table_id = tab1, column = 0, row = 0, text_color=color.white, text_size=size.small, text = "ATR " + tostring(f_truncate(atr1, 4)))
+    table.cell(table_id = tab1, column = 0, row = 1, text_color=color.white, text_size=size.small, text = "ADX " + tostring(f_truncate(adx1, 2)))
+
+alertcondition(enter_oversold or enter_overbought, title='Stochastics RSI overbought or oversold', message='Stochastics RSI overbought or oversold')    
+alertcondition(enter_overbought, title='Stochastics RSI overbought', message='Stochastics RSI overbought')
+alertcondition(enter_oversold,   title='Stochastics RSI oversold', message='Stochastics RSI oversold')
+alertcondition(stoch_cross and (enter_oversold or enter_overbought), title='Stochastics cross (overbought, oversold)', message='Stochastics cross (overbought, oversold)')
