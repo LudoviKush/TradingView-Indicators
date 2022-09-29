@@ -1,0 +1,1 @@
+Description for Corrado's strategy
