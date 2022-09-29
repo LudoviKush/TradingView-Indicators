@@ -2,4 +2,4 @@
 Best TradingView Indicators I personally use.
 
 ## Note:
-This repository is going to be reformatted addding all the usage instructions needed.
+This is not financial advice. Use these at your own risk.
