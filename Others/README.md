@@ -15,8 +15,8 @@ The default settings highlight an OB when 5 consecutive candles are reached.
 This indicator is an improvement of the classic RSI and shows BUY/SELL signals
 Note: It shouldn't be used solely but matched with others indicators for confirmation.
 
-## MACD+BB
-This indicator, as the name suggest is an aggregation of the two indicators MACD (Moving Average Convergence Divergence) and BB (Bollinger Bands)
+## ATR+MACD
+This indicator, as the name suggest is an aggregation of the two indicators ATR (Average True Range) and MACD (Moving average convergence divergence)
 
 ## Trendlines_breaks
 This indicator automatically draws bullish/bearish trendlines to forecast where the price can move next.
