@@ -1,0 +1,54 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © TheSocialCryptoClub info@thesocialcrypto.club
+
+//@version=5
+indicator("Kijun Trend Indicator + Ichimoku Cloud", overlay=true)
+
+// input
+myline_periods = input.int(defval=26, title="Lenght")
+myline_type = input.string(defval="Kijun", options=["Kijun", "SMA", "EMA"], title="Type")
+
+// default myline color
+var myline_color = color.black
+
+// default line is Kijun
+myline = math.avg(ta.lowest(low, myline_periods),ta.highest(high, myline_periods))
+// or SMA
+myline := myline_type == "SMA" ? ta.sma(close,myline_periods) : myline
+// or EMA
+myline := myline_type == "EMA" ? ta.ema(close,myline_periods) : myline
+
+// filter conditions
+long  =  low[1]>myline[1] and low[2]>myline[2] and low[3] <= myline[3]
+short =  high[1]<myline[1] and high[2]<myline[2] and high[3]>= myline[3]
+
+// color the line
+myline_color := long ? color.blue : myline_color
+myline_color := short ? color.red : myline_color
+
+// plot
+
+plot(myline, color=myline_color, linewidth=2, title="Kijun Trend Indicator")
+
+// input
+conversionPeriods = input.int(9, minval=1, title="Conversion Line Length")
+basePeriods = input.int(26, minval=1, title="Base Line Length")
+laggingSpan2Periods = input.int(52, minval=1, title="Leading Span B Length")
+displacement = input.int(26, minval=1, title="Lagging Span")
+
+// setup
+donchian(len) => math.avg(ta.lowest(len), ta.highest(len))
+conversionLine = donchian(conversionPeriods)
+baseLine = donchian(basePeriods)
+leadLine1 = math.avg(conversionLine, baseLine)
+leadLine2 = donchian(laggingSpan2Periods)
+
+// plot
+plot(conversionLine, color=#2962FF, title="Conversion Line")
+plot(baseLine, color=#B71C1C, title="Base Line")
+plot(close, offset = -displacement + 1, color=#43A047, title="Lagging Span")
+p1 = plot(leadLine1, offset = displacement - 1, color=#A5D6A7,
+	 title="Leading Span A")
+p2 = plot(leadLine2, offset = displacement - 1, color=#EF9A9A,
+	 title="Leading Span B")
+fill(p1, p2, color = leadLine1 > leadLine2 ? color.rgb(67, 160, 71, 90) : color.rgb(244, 67, 54, 90))
