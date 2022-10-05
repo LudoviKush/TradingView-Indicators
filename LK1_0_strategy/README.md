@@ -3,7 +3,7 @@
 ## Explanation
 This indicator consist in a combination of:
 
-- Momentum strategy
+- Momentum strategy(40)
 - EMA (200)
 - Kijun Trend Indicator (26)
 
