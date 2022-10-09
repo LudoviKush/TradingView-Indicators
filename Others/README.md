@@ -20,6 +20,8 @@ These indicators offers combination of indicators in order to workaround the 3 i
 
 - ATR+MACD : This indicator, as the name suggest is an aggregation of the two indicators ATR (Average True Range) and MACD (Moving average convergence divergence)
 - Ichimoku+Kijun : This indicator, as the name suggest is an aggregation of the two indicators Ichimoku Cloud and Kinjun Trend.
+- EMA+BB : Exponetial Moving Average + Bollinger Bands.
+- Sessions+Kijun: This indicator shows the trading sessions and the kijun trend indicator.
 
 ## Trendlines_breaks
 This indicator automatically draws bullish/bearish trendlines to forecast where the price can move next.
