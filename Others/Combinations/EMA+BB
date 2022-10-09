@@ -4,7 +4,7 @@ len = input.int(9, minval=1, title="Length")
 src = input(close, title="Source")
 offset = input.int(title="Offset", defval=0, minval=-500, maxval=500)
 out = ta.ema(src, len)
-plot(out, title="EMA", color=color.blue, offset=offset)
+plot(out, title="EMA", color=color.yellow, offset=offset)
 
 ma(source, length, type) =>
     switch type
