@@ -1,0 +1,32 @@
+//@version=5
+indicator(title="Moving Average Exponential", shorttitle="EMA+BB", overlay=true, timeframe="", timeframe_gaps=true)
+len = input.int(9, minval=1, title="Length")
+src = input(close, title="Source")
+offset = input.int(title="Offset", defval=0, minval=-500, maxval=500)
+out = ta.ema(src, len)
+plot(out, title="EMA", color=color.blue, offset=offset)
+
+ma(source, length, type) =>
+    switch type
+        "SMA" => ta.sma(source, length)
+        "EMA" => ta.ema(source, length)
+        "SMMA (RMA)" => ta.rma(source, length)
+        "WMA" => ta.wma(source, length)
+        "VWMA" => ta.vwma(source, length)
+
+typeMA = input.string(title = "Method", defval = "SMA", options=["SMA", "EMA", "SMMA (RMA)", "WMA", "VWMA"], group="Smoothing")
+smoothingLength = input.int(title = "Length", defval = 5, minval = 1, maxval = 100, group="Smoothing")
+
+smoothingLine = ma(out, smoothingLength, typeMA)
+plot(smoothingLine, title="Smoothing Line", color=#f37f20, offset=offset, display=display.none)
+
+length = input.int(20, minval=1)
+mult = input.float(2.0, minval=0.001, maxval=50, title="StdDev")
+basis = ta.sma(src, length)
+dev = mult * ta.stdev(src, length)
+upper = basis + dev
+lower = basis - dev
+plot(basis, "Basis", color=#FF6D00, offset = offset)
+p1 = plot(upper, "Upper", color=#2962FF, offset = offset)
+p2 = plot(lower, "Lower", color=#2962FF, offset = offset)
+fill(p1, p2, title = "Background", color=color.rgb(33, 150, 243, 95))
